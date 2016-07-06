@@ -106,11 +106,10 @@ def message_display(surface,text):
 	surface.blit(textSurf,textRect)
 	pygame.display.update()
 	time.sleep(4)
-	terminate()
+        get_exit_status()
 
-def main():
+def game():
 	pygame.init()
-	displaysurf = pygame.display.set_mode((const.SCR_W,const.SCR_H))
 	game_state = state.GameState()
 	pygame.mixer.music.load('sounds/music.wav')
 	pygame.mixer.music.play(-1)
@@ -156,6 +155,30 @@ def main():
 		#display
 		draw_screen(displaysurf,game_state)
 		pygame.time.delay(60)
+
+def get_exit_status():
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == K_n:
+                    terminate()
+                else:
+                    game()
+        displaysurf.fill((255,255,255))
+        largeText = pygame.font.Font('freesansbold.ttf',50)
+        TextSurf, TextRect = text_objects("Continue? Y/N", largeText)
+        TextRect.center = ((const.SCR_W/2),(const.SCR_H/2))
+        displaysurf.blit(TextSurf, TextRect)
+        pygame.display.update()
+        pygame.time.delay(15)
+
+displaysurf = pygame.display.set_mode((const.SCR_W,const.SCR_H))
+
+def main():
+	game()
 
 if __name__ == '__main__':
 	main()
