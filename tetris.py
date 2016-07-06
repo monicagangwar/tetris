@@ -26,6 +26,8 @@ def check_if_line(game_state):
 				complete = False
 				break
 		if complete == True:
+			row_sound = pygame.mixer.Sound('sounds/row.wav')
+			pygame.mixer.Sound.play(row_sound)
 			game_state.score += 1
 			val += 1
 			if y in rows:
