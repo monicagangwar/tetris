@@ -11,7 +11,42 @@ def terminate(error=0):
 	pygame.quit()
 	sys.exit(error)
 
+def check_if_line(game_state):
+	rows = [0 for x in range(0,const.WELL_H)]
+	val = 0
+	y = const.WELL_H
+	while y > 0:
+		y -= 1
+		x = const.WELL_W
+		complete = True
+		while x > 0:
+			x -= 1
+			if game_state.well[y][x] == 0:
+				complete = False
+				break
+		if complete == True:
+			game_state.score += 1
+			val += 1
+			if y in rows:
+				for i in range(y+1,const.WELL_H):
+					rows[i] -= 1
+		rows[y] = y - val 
+	
+	y = const.WELL_H
+	while y > 0:
+		y -= 1
+		x = const.WELL_W
+		while x > 0:
+			x -= 1
+			if rows[y] < 0:
+				game_state.well[y][x] = 0
+			else:
+				game_state.well[y][x] = game_state.well[rows[y]][x]
+	return game_state
+
 def draw_screen(surface,game_state):
+
+	surface.fill((0,0,0))
 
 	#Draw well with border
 	pygame.draw.rect(surface,const.C_LGRAY,(const.MARGIN_LEFT - 5,const.MARGIN_TOP - 5,
@@ -41,14 +76,22 @@ def draw_screen(surface,game_state):
 
 	pygame.draw.rect(surface,curr_color,(curr_left,curr_top,
 																			const.BLOCK_SIZE,const.BLOCK_SIZE))
+
 	
+	score(surface,game_state.score)
 	pygame.display.update()
+
+def score(surface,score):
+	font = pygame.font.SysFont('monospace',20)
+	text = font.render("Score : "+str(score),True,const.C_RED)
+	surface.blit(text,(50,10))
 
 def main():
 	pygame.init()
 	displaysurf = pygame.display.set_mode((const.SCR_W,const.SCR_H))
 	game_state = state.GameState()
 	while True:
+		game_state = check_if_line(game_state)
 		dx = 0
 		for event in pygame.event.get():
 			if event.type == QUIT:
@@ -83,7 +126,7 @@ def main():
 
 		#display
 		draw_screen(displaysurf,game_state)
-		pygame.time.delay(50)
+		pygame.time.delay(60)
 
 if __name__ == '__main__':
 	main()
