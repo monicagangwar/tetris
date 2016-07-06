@@ -3,6 +3,7 @@
 
 import sys
 import pygame
+import time
 from tetris import const,state
 
 from pygame.locals import *
@@ -46,13 +47,13 @@ def check_if_line(game_state):
 
 def draw_screen(surface,game_state):
 
-	surface.fill((0,0,0))
+	surface.fill(const.C_LGRAY)
 
 	#Draw well with border
-	pygame.draw.rect(surface,const.C_LGRAY,(const.MARGIN_LEFT - 5,const.MARGIN_TOP - 5,
+	pygame.draw.rect(surface,const.C_DGRAY,(const.MARGIN_LEFT - 5,const.MARGIN_TOP - 5,
 																					const.WELL_PX_W + 10,const.WELL_PX_H + 10))
 
-	pygame.draw.rect(surface,const.C_DGRAY,(const.MARGIN_LEFT,const.MARGIN_TOP,
+	pygame.draw.rect(surface,const.C_WHITE,(const.MARGIN_LEFT,const.MARGIN_TOP,
 																					const.WELL_PX_W,const.WELL_PX_H))
 
 	#Draw blocks
@@ -63,9 +64,13 @@ def draw_screen(surface,game_state):
 			curr = game_state.well[y][x]
 			if curr != 0:
 				current_color = const.C_LIST[curr]
-				pygame.draw.rect(surface,current_color,(const.MARGIN_LEFT + x * const.BLOCK_SIZE,
+				pygame.draw.rect(surface,const.C_DGRAY,(const.MARGIN_LEFT + x * const.BLOCK_SIZE,
 																								const.MARGIN_TOP + y * const.BLOCK_SIZE,
 																								const.BLOCK_SIZE,const.BLOCK_SIZE))
+
+				pygame.draw.rect(surface,current_color,(const.MARGIN_LEFT + x * const.BLOCK_SIZE - 1,
+																								const.MARGIN_TOP + y * const.BLOCK_SIZE - 1,
+																								const.BLOCK_SIZE - 1,const.BLOCK_SIZE - 1))
 			x += 1
 		y += 1
 
@@ -84,7 +89,20 @@ def draw_screen(surface,game_state):
 def score(surface,score):
 	font = pygame.font.SysFont('monospace',20)
 	text = font.render("Score : "+str(score),True,const.C_RED)
-	surface.blit(text,(50,10))
+	surface.blit(text,(const.MARGIN_LEFT,10))
+
+def text_objects(text,font):
+	textSurface = font.render(text,True,const.C_BROWN)
+	return textSurface,textSurface.get_rect()
+
+def message_display(surface,text):
+	font = pygame.font.Font('freesansbold.ttf',30)
+	textSurf,textRect = text_objects(text,font)
+	textRect.center = ((const.SCR_W/2),(const.SCR_H/2))
+	surface.blit(textSurf,textRect)
+	pygame.display.update()
+	time.sleep(2)
+	terminate()
 
 def main():
 	pygame.init()
@@ -122,6 +140,8 @@ def main():
 				game_state.piece_y += 1
 		else:
 			game_state.well[game_state.piece_y][game_state.piece_x] = game_state.cur_piece[0][0]
+			if game_state.well[0][4] != 0:
+				message_display(displaysurf,'Game ends. Your Score is ' + str(game_state.score))
 			game_state.spawn_piece()
 
 		#display
