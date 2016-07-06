@@ -103,13 +103,15 @@ def message_display(surface,text):
 	textRect.center = ((const.SCR_W/2),(const.SCR_H/2))
 	surface.blit(textSurf,textRect)
 	pygame.display.update()
-	time.sleep(2)
+	time.sleep(4)
 	terminate()
 
 def main():
 	pygame.init()
 	displaysurf = pygame.display.set_mode((const.SCR_W,const.SCR_H))
 	game_state = state.GameState()
+	pygame.mixer.music.load('sounds/music.wav')
+	pygame.mixer.music.play(-1)
 	while True:
 		game_state = check_if_line(game_state)
 		dx = 0
@@ -143,6 +145,9 @@ def main():
 		else:
 			game_state.well[game_state.piece_y][game_state.piece_x] = game_state.cur_piece[0][0]
 			if game_state.well[0][4] != 0:
+				end_sound = pygame.mixer.Sound('sounds/end.wav')
+				pygame.mixer.Sound.play(end_sound)
+				pygame.mixer.music.stop()
 				message_display(displaysurf,'Game ends. Your Score is ' + str(game_state.score))
 			game_state.spawn_piece()
 
