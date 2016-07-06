@@ -9,6 +9,8 @@ class GameState(object):
 		self.score = 0
 		self.cur_piece = None
 		self.next_piece = None
+		self.piece_x = 0
+		self.piece_y = 0
 	
 	def init_well(self):
 		self.well = []
@@ -31,3 +33,6 @@ class GameState(object):
 			self.next_piece = self.get_new_piece()
 		self.cur_piece = self.next_piece
 		self.next_piece = self.get_new_piece()
+
+		self.piece_x = 4 
+		self.piece_y = 0

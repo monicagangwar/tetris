@@ -29,25 +29,61 @@ def draw_screen(surface,game_state):
 			if curr != 0:
 				current_color = const.C_LIST[curr]
 				pygame.draw.rect(surface,current_color,(const.MARGIN_LEFT + x * const.BLOCK_SIZE,
-																								const.MARIN_TOP + y * const.BLOCK_SIZE,
+																								const.MARGIN_TOP + y * const.BLOCK_SIZE,
 																								const.BLOCK_SIZE,const.BLOCK_SIZE))
 			x += 1
 		y += 1
+
+	#Draw current piece
+	curr_left = const.MARGIN_LEFT + (game_state.piece_x * const.BLOCK_SIZE)
+	curr_top = const.MARGIN_TOP + (game_state.piece_y * const.BLOCK_SIZE)
+	curr_color = const.C_LIST[game_state.cur_piece[0][0]]
+
+	pygame.draw.rect(surface,curr_color,(curr_left,curr_top,
+																			const.BLOCK_SIZE,const.BLOCK_SIZE))
 	
-	pygame.display.flip()
+	pygame.display.update()
 
 def main():
 	pygame.init()
 	displaysurf = pygame.display.set_mode((const.SCR_W,const.SCR_H))
 	game_state = state.GameState()
 	while True:
-		#display
-
-		draw_screen(displaysurf,game_state)
-
+		dx = 0
 		for event in pygame.event.get():
 			if event.type == QUIT:
 				terminate()
+			elif event.type == pygame.KEYDOWN:
+				if event.key == pygame.K_LEFT:
+					if (game_state.piece_x - 1) >= 0 and game_state.well[game_state.piece_y][game_state.piece_x - 1] == 0: 
+						dx = -1
+				elif event.key == pygame.K_RIGHT:
+					if (game_state.piece_x + 1) < const.WELL_W and game_state.well[game_state.piece_y][game_state.piece_x + 1] == 0:
+						dx = 1
+			elif event.type == pygame.KEYUP:
+				if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
+					dx = 0
+
+		#game logic
+		if game_state.cur_piece == None:
+			game_state.spawn_piece()
+
+		game_state.piece_x += dx
+
+		if game_state.piece_x < 0:
+			game_state.piece_x = 0
+		if game_state.piece_x >= const.WELL_W:
+			game_state.piece_x = const.WELL_W - 1
+
+		if game_state.piece_y < const.WELL_H - 1 and game_state.well[game_state.piece_y + 1][game_state.piece_x] == 0:
+				game_state.piece_y += 1
+		else:
+			game_state.well[game_state.piece_y][game_state.piece_x] = game_state.cur_piece[0][0]
+			game_state.spawn_piece()
+
+		#display
+		draw_screen(displaysurf,game_state)
+		pygame.time.delay(50)
 
 if __name__ == '__main__':
 	main()
