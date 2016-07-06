@@ -70,7 +70,7 @@ def draw_screen(surface,game_state):
 
 				pygame.draw.rect(surface,current_color,(const.MARGIN_LEFT + x * const.BLOCK_SIZE - 1,
 																								const.MARGIN_TOP + y * const.BLOCK_SIZE - 1,
-																								const.BLOCK_SIZE - 1,const.BLOCK_SIZE - 1))
+																								const.BLOCK_SIZE - 1,const.BLOCK_SIZE - 1 ))
 			x += 1
 		y += 1
 
@@ -79,9 +79,11 @@ def draw_screen(surface,game_state):
 	curr_top = const.MARGIN_TOP + (game_state.piece_y * const.BLOCK_SIZE)
 	curr_color = const.C_LIST[game_state.cur_piece[0][0]]
 
+	pygame.draw.rect(surface,const.C_DGRAY,(curr_left,curr_top,
+																			const.BLOCK_SIZE + 1,const.BLOCK_SIZE + 1))
+
 	pygame.draw.rect(surface,curr_color,(curr_left,curr_top,
 																			const.BLOCK_SIZE,const.BLOCK_SIZE))
-
 	
 	score(surface,game_state.score)
 	pygame.display.update()
