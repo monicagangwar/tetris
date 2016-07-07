@@ -11,6 +11,7 @@ class GameState(object):
 		self.next_piece = None
 		self.piece_x = 0
 		self.piece_y = 0
+		self.rotate = 0
 	
 	def init_well(self):
 		self.well = []
@@ -36,3 +37,4 @@ class GameState(object):
 
 		self.piece_x = 4 
 		self.piece_y = 0
+		self.rotate = 0
