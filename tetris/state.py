@@ -26,7 +26,7 @@ class GameState(object):
 			self.level += 1
 	
 	def get_new_piece(self):
-		return [[random.choice(range(1,8))]]
+		return {'color' : random.choice(range(1,8)), 'shape' : random.choice(range(0,7))}
 
 	def spawn_piece(self):
 		if self.next_piece == None:

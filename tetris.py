@@ -81,11 +81,18 @@ def draw_screen(surface,game_state):
 		y += 1
 
 	#Draw current piece
-	curr_left = const.MARGIN_LEFT + (game_state.piece_x * const.BLOCK_SIZE)
-	curr_top = const.MARGIN_TOP + (game_state.piece_y * const.BLOCK_SIZE)
-	curr_color = const.C_LIST[game_state.cur_piece[0][0]]
-	pygame.draw.rect(surface,curr_color,(curr_left,curr_top,
-																			const.BLOCK_SIZE,const.BLOCK_SIZE))
+	block_shape = const.BLOCK_LIST[game_state.cur_piece['shape']]
+	curr_color = const.C_LIST[game_state.cur_piece['color']]
+	for i in range(0,4):
+		for j in range(0,4):
+			if block_shape[i][j] == 1:
+				curr_left = const.MARGIN_LEFT + ((game_state.piece_x + j) * const.BLOCK_SIZE)
+				curr_top = const.MARGIN_TOP + ((game_state.piece_y + i) * const.BLOCK_SIZE)
+				pygame.draw.rect(surface,const.C_DGRAY,(curr_left,curr_top,
+																						const.BLOCK_SIZE,const.BLOCK_SIZE))
+
+				pygame.draw.rect(surface,curr_color,(curr_left - 1,curr_top - 1,
+																						const.BLOCK_SIZE - 1,const.BLOCK_SIZE - 1))
 	
 	score(surface,game_state.score)
 	pygame.display.update()
@@ -108,27 +115,47 @@ def message_display(surface,text):
 	time.sleep(4)
         get_exit_status()
 
+def collision(game_state,diff_x,diff_y):
+	block_shape = const.BLOCK_LIST[game_state.cur_piece['shape']]
+	max_x = 0
+	max_y = 0
+	for i in range(0,4):
+		for j in range(0,4):
+			if block_shape[i][j] == 1:
+				if j > max_x:
+					max_x = j
+				if i > max_y:
+					max_y = i
+				if game_state.piece_x + diff_x < 0:
+					return True
+				if game_state.piece_x + max_x + diff_x > const.WELL_W - 1:
+					return True
+				if game_state.piece_y + max_y + diff_y > const.WELL_H - 1:
+					return True
+				if game_state.well[game_state.piece_y + diff_y + i][game_state.piece_x + diff_x + j] != 0:
+					return True	
+	return False
+
 def game():
 	pygame.init()
 	play_sound('SFX_GameStart.ogg')
 	game_state = state.GameState()
 	while True:
 		game_state = check_if_line(game_state)
-		dx = 0
 		for event in pygame.event.get():
 			if event.type == QUIT:
 				terminate()
 			elif event.type == pygame.KEYDOWN:
 				if event.key == pygame.K_LEFT:
-					if (game_state.piece_x - 1) >= 0 and game_state.well[game_state.piece_y][game_state.piece_x - 1] == 0: 
+					if collision(game_state,-1,0) == False: 
 						play_sound('SFX_PieceMoveLR.ogg')
-						dx = -1
+						game_state.piece_x += -1
 					else:
 						play_sound('SFX_PieceTouchLR.ogg')
 				elif event.key == pygame.K_RIGHT:
-					if (game_state.piece_x + 1) < const.WELL_W and game_state.well[game_state.piece_y][game_state.piece_x + 1] == 0:
+					if collision(game_state,1,0) == False:
 						play_sound('SFX_PieceMoveLR.ogg')
-						dx = 1
+						game_state.piece_x += 1
 					else:
 						play_sound('SFX_PieceTouchLR.ogg')
 			elif event.type == pygame.KEYUP:
@@ -139,18 +166,17 @@ def game():
 		if game_state.cur_piece == None:
 			game_state.spawn_piece()
 
-		game_state.piece_x += dx
 
-		if game_state.piece_x < 0:
-			game_state.piece_x = 0
-		if game_state.piece_x >= const.WELL_W:
-			game_state.piece_x = const.WELL_W - 1
-
-		if game_state.piece_y < const.WELL_H - 1 and game_state.well[game_state.piece_y + 1][game_state.piece_x] == 0:
+		if collision(game_state,0,1) == False:
 				game_state.piece_y += 1
 		else:
-			game_state.well[game_state.piece_y][game_state.piece_x] = game_state.cur_piece[0][0]
 			play_sound('SFX_PieceLockdown.ogg')
+			block_shape = const.BLOCK_LIST[game_state.cur_piece['shape']]
+			color = game_state.cur_piece['color']
+			for i in range(0,4):
+				for j in range(0,4):
+					if block_shape[i][j] == 1:
+						game_state.well[game_state.piece_y + i][game_state.piece_x + j] = color
 			if game_state.well[0][4] != 0:
 				play_sound('SFX_GameOver.ogg')
 				message_display(displaysurf,'Game ends. Your Score is ' + str(game_state.score))
