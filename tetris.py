@@ -148,7 +148,7 @@ def main():
 
 		#display
 		draw_screen(displaysurf,game_state)
-		pygame.time.delay(60)
+		pygame.time.delay(600)
 
 if __name__ == '__main__':
 	main()
