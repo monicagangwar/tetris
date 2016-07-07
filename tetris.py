@@ -26,6 +26,8 @@ def check_if_line(game_state):
 				complete = False
 				break
 		if complete == True:
+			row_sound = pygame.mixer.Sound('sounds/row.wav')
+			pygame.mixer.Sound.play(row_sound)
 			game_state.score += 1
 			val += 1
 			if y in rows:
@@ -103,13 +105,14 @@ def message_display(surface,text):
 	textRect.center = ((const.SCR_W/2),(const.SCR_H/2))
 	surface.blit(textSurf,textRect)
 	pygame.display.update()
-	time.sleep(2)
-	terminate()
+	time.sleep(4)
+        get_exit_status()
 
-def main():
+def game():
 	pygame.init()
-	displaysurf = pygame.display.set_mode((const.SCR_W,const.SCR_H))
 	game_state = state.GameState()
+	pygame.mixer.music.load('sounds/music.wav')
+	pygame.mixer.music.play(-1)
 	while True:
 		game_state = check_if_line(game_state)
 		dx = 0
@@ -143,12 +146,39 @@ def main():
 		else:
 			game_state.well[game_state.piece_y][game_state.piece_x] = game_state.cur_piece[0][0]
 			if game_state.well[0][4] != 0:
+				end_sound = pygame.mixer.Sound('sounds/end.wav')
+				pygame.mixer.Sound.play(end_sound)
+				pygame.mixer.music.stop()
 				message_display(displaysurf,'Game ends. Your Score is ' + str(game_state.score))
 			game_state.spawn_piece()
 
 		#display
 		draw_screen(displaysurf,game_state)
 		pygame.time.delay(600)
+
+def get_exit_status():
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == K_n:
+                    terminate()
+                else:
+                    game()
+        displaysurf.fill((255,255,255))
+        largeText = pygame.font.Font('freesansbold.ttf',50)
+        TextSurf, TextRect = text_objects("Continue? Y/N", largeText)
+        TextRect.center = ((const.SCR_W/2),(const.SCR_H/2))
+        displaysurf.blit(TextSurf, TextRect)
+        pygame.display.update()
+        pygame.time.delay(15)
+
+displaysurf = pygame.display.set_mode((const.SCR_W,const.SCR_H))
+
+def main():
+	game()
 
 if __name__ == '__main__':
 	main()
