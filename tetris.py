@@ -12,6 +12,11 @@ def terminate(error=0):
 	pygame.quit()
 	sys.exit(error)
 
+def play_sound(path):
+	sound = pygame.mixer.Sound('sounds/'+path)
+	pygame.mixer.Sound.play(sound)
+	pygame.mixer.music.stop()
+
 def check_if_line(game_state):
 	rows = [0 for x in range(0,const.WELL_H)]
 	val = 0
@@ -26,8 +31,7 @@ def check_if_line(game_state):
 				complete = False
 				break
 		if complete == True:
-			row_sound = pygame.mixer.Sound('sounds/row.wav')
-			pygame.mixer.Sound.play(row_sound)
+			play_sound('SFX_SpecialTetris.ogg')
 			game_state.score += 1
 			val += 1
 			if y in rows:
@@ -80,10 +84,6 @@ def draw_screen(surface,game_state):
 	curr_left = const.MARGIN_LEFT + (game_state.piece_x * const.BLOCK_SIZE)
 	curr_top = const.MARGIN_TOP + (game_state.piece_y * const.BLOCK_SIZE)
 	curr_color = const.C_LIST[game_state.cur_piece[0][0]]
-
-	pygame.draw.rect(surface,const.C_DGRAY,(curr_left,curr_top,
-																			const.BLOCK_SIZE + 1,const.BLOCK_SIZE + 1))
-
 	pygame.draw.rect(surface,curr_color,(curr_left,curr_top,
 																			const.BLOCK_SIZE,const.BLOCK_SIZE))
 	
@@ -110,9 +110,8 @@ def message_display(surface,text):
 
 def game():
 	pygame.init()
+	play_sound('SFX_GameStart.ogg')
 	game_state = state.GameState()
-	pygame.mixer.music.load('sounds/music.wav')
-	pygame.mixer.music.play(-1)
 	while True:
 		game_state = check_if_line(game_state)
 		dx = 0
@@ -122,10 +121,16 @@ def game():
 			elif event.type == pygame.KEYDOWN:
 				if event.key == pygame.K_LEFT:
 					if (game_state.piece_x - 1) >= 0 and game_state.well[game_state.piece_y][game_state.piece_x - 1] == 0: 
+						play_sound('SFX_PieceMoveLR.ogg')
 						dx = -1
+					else:
+						play_sound('SFX_PieceTouchLR.ogg')
 				elif event.key == pygame.K_RIGHT:
 					if (game_state.piece_x + 1) < const.WELL_W and game_state.well[game_state.piece_y][game_state.piece_x + 1] == 0:
+						play_sound('SFX_PieceMoveLR.ogg')
 						dx = 1
+					else:
+						play_sound('SFX_PieceTouchLR.ogg')
 			elif event.type == pygame.KEYUP:
 				if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
 					dx = 0
@@ -145,10 +150,9 @@ def game():
 				game_state.piece_y += 1
 		else:
 			game_state.well[game_state.piece_y][game_state.piece_x] = game_state.cur_piece[0][0]
+			play_sound('SFX_PieceLockdown.ogg')
 			if game_state.well[0][4] != 0:
-				end_sound = pygame.mixer.Sound('sounds/end.wav')
-				pygame.mixer.Sound.play(end_sound)
-				pygame.mixer.music.stop()
+				play_sound('SFX_GameOver.ogg')
 				message_display(displaysurf,'Game ends. Your Score is ' + str(game_state.score))
 			game_state.spawn_piece()
 
