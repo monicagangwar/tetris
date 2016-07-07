@@ -154,20 +154,19 @@ def game():
 
 		#display
 		draw_screen(displaysurf,game_state)
-		pygame.time.delay(600)
+		pygame.time.delay(200)
 
 def get_exit_status():
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                pygame.quit()
-                quit()
+                terminate()
             if event.type == pygame.KEYDOWN:
                 if event.key == K_n:
                     terminate()
                 else:
                     game()
-        displaysurf.fill((255,255,255))
+        displaysurf.fill(const.C_WHITE)
         largeText = pygame.font.Font('freesansbold.ttf',50)
         TextSurf, TextRect = text_objects("Continue? Y/N", largeText)
         TextRect.center = ((const.SCR_W/2),(const.SCR_H/2))
