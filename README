@@ -1,11 +1,11 @@
 Dependencies
-	Pygame
-		Installation : sudo apt-get install python-pygame
+  1.Pygame
+	  Installation : sudo apt-get install python-pygame
 
 Run command
-	python tetris.py
+  python tetris.py
 
 How to play
-	Left Arrow key  : move block to left
-	Right Arrow key : move block to right
-	Space	key				: rotate block
+  Left Arrow key  : move block to left
+  Right Arrow key : move block to right
+  Space	key       : rotate block
