@@ -175,9 +175,13 @@ def game():
 					new_game_state.rotate = (new_game_state.rotate + 1)%4
 					if collision(new_game_state,0,0) == False:
 						game_state = new_game_state
+				elif event.key == pygame.K_DOWN:
+					game_state.piece_y += 1
 			elif event.type == pygame.KEYUP:
 				if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
 					dx = 0
+				#elif event.key == pygame.K_DOWN:
+				#	game_state.piece_y += 1
 
 		#game logic
 		if game_state.cur_piece == None:
@@ -188,6 +192,7 @@ def game():
 				loop += 1
 				if loop % 5 == 0:	
 					game_state.piece_y += 1
+					loop = 0
 
 		else:
 			game_state = piece_lockdown(game_state)
