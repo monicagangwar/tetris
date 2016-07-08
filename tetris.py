@@ -149,6 +149,8 @@ def piece_lockdown(game_state):
 
 def game():
 	pygame.init()
+	clock = pygame.time.Clock()
+	loop = 0
 	play_sound('SFX_GameStart.ogg')
 	game_state = state.GameState()
 	while True:
@@ -173,6 +175,8 @@ def game():
 					game_state.rotate = (game_state.rotate + 1)%4
 					if collision(game_state,0,0) == True:
 						game_state.rotate = (game_state.rotate - 1)%4
+				elif event.key == pygame.K_DOWN:
+					game_state.piece_y += 1
 
 		#game logic
 		if game_state.cur_piece == None:
@@ -180,7 +184,11 @@ def game():
 
 
 		if collision(game_state,0,1) == False:
-				game_state.piece_y += 1
+				loop += 1
+				if loop % 5 == 0:	
+					game_state.piece_y += 1
+					loop = 0
+
 		else:
 			game_state = piece_lockdown(game_state)
 			game_state.spawn_piece()
@@ -196,7 +204,9 @@ def game():
 
 		#display
 		draw_screen(displaysurf,game_state)
-		pygame.time.delay(200)
+		pygame.display.update()
+		clock.tick(25)
+#		pygame.time.delay(200)
 
 def get_exit_status():
     while True:
