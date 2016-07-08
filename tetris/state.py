@@ -11,6 +11,7 @@ class GameState(object):
 		self.next_piece = None
 		self.piece_x = 0
 		self.piece_y = 0
+		self.rotate = 0
 	
 	def init_well(self):
 		self.well = []
@@ -26,7 +27,7 @@ class GameState(object):
 			self.level += 1
 	
 	def get_new_piece(self):
-		return [[random.choice(range(1,8))]]
+		return {'color' : random.choice(range(1,8)), 'shape' : random.choice(range(0,7))}
 
 	def spawn_piece(self):
 		if self.next_piece == None:
@@ -36,3 +37,4 @@ class GameState(object):
 
 		self.piece_x = 4 
 		self.piece_y = 0
+		self.rotate = 0
