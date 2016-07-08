@@ -140,10 +140,11 @@ def piece_lockdown(game_state):
 	play_sound('SFX_PieceLockdown.ogg')
 	block_shape = const.BLOCK_LIST[game_state.cur_piece['shape']][game_state.rotate]
 	color = game_state.cur_piece['color']
-	for i in range(0,4):
-		for j in range(0,4):
-			if block_shape[i][j] == 1:
-				game_state.well[game_state.piece_y + i][game_state.piece_x + j] = color
+	if collision(game_state,0,0) == False: 
+		for i in range(0,4):
+			for j in range(0,4):
+				if block_shape[i][j] == 1:
+					game_state.well[game_state.piece_y + i][game_state.piece_x + j] = color
 	return game_state
 
 def game():
@@ -169,13 +170,9 @@ def game():
 					else:
 						play_sound('SFX_PieceTouchLR.ogg')
 				elif event.key == pygame.K_SPACE:
-					new_game_state = game_state
-					new_game_state.rotate = (new_game_state.rotate + 1)%4
-					if collision(new_game_state,0,0) == False:
-						game_state = new_game_state
-			elif event.type == pygame.KEYUP:
-				if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
-					dx = 0
+					game_state.rotate = (game_state.rotate + 1)%4
+					if collision(game_state,0,0) == True:
+						game_state.rotate = (game_state.rotate - 1)%4
 
 		#game logic
 		if game_state.cur_piece == None:
@@ -189,14 +186,12 @@ def game():
 			game_state.spawn_piece()
 			if collision(game_state,0,0):
 				block_shape = const.BLOCK_LIST[game_state.cur_piece['shape']][game_state.rotate]
-				color = const.C_LIST[game_state.cur_piece['color']]
 				for i in range(0,4):
 					for j in range(0,4):
 						if block_shape[i][j] == 1 and game_state.well[game_state.piece_y + i][game_state.piece_x + j] == 0:
-							game_state.well[game_state.piece_y + i][game_state.piece_x + j] = color
-
-
+							game_state.well[game_state.piece_y + i][game_state.piece_x + j] = game_state.cur_piece['color']
 				play_sound('SFX_GameOver.ogg')
+				draw_screen(displaysurf,game_state)
 				message_display(displaysurf,'Game ends. Your Score is ' + str(game_state.score))
 
 		#display
