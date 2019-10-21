@@ -4,7 +4,8 @@
 import sys
 import pygame
 import time
-from tetris import const,state
+import const, state
+#from tetris import const,state
 
 from pygame.locals import *
 
@@ -113,7 +114,7 @@ def message_display(surface,text):
 	surface.blit(textSurf,textRect)
 	pygame.display.update()
 	time.sleep(4)
-        get_exit_status()
+	get_exit_status()
 
 def collision(game_state,diff_x,diff_y):
 	block_shape = const.BLOCK_LIST[game_state.cur_piece['shape']][game_state.rotate]
@@ -153,10 +154,11 @@ def game():
 	loop = 0
 	play_sound('SFX_GameStart.ogg')
 	game_state = state.GameState()
+	print(game_state)
 	while True:
 		game_state = check_if_line(game_state)
 		for event in pygame.event.get():
-			if event.type == QUIT:
+			if event.type == pygame.QUIT:
 				terminate()
 			elif event.type == pygame.KEYDOWN:
 				if event.key == pygame.K_LEFT:
@@ -228,8 +230,5 @@ def get_exit_status():
 
 displaysurf = pygame.display.set_mode((const.SCR_W,const.SCR_H))
 
-def main():
-	game()
-
 if __name__ == '__main__':
-	main()
+  game()

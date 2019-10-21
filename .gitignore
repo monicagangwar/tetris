@@ -19,3 +19,6 @@ develop-eggs
 # Installer logs
 pip-log.txt
 
+venv
+.vscode
+.idea
